@@ -1,0 +1,2 @@
+# trojan
+fuck GFW
