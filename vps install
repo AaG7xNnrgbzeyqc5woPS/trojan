@@ -1,5 +1,6 @@
 vps install 
 1, 1, 服务器安装 arch
+   2，服务器安装Alpine. Alpine 体积更小，只有5MByte
 2, ssh 配置
    使用公私钥机制 免密码登录
    设置客户端配置文件，使用别名简化登录命令
@@ -10,6 +11,18 @@ vps install
   ufw default deny
 4,下一步，
   最好更改  ssh服务器端口，不要使用缺省22号端口，这样大大提高安全性，一般的网络端口扫描都会扫描22端口，其他的扫描少多了。可以减少99%的攻击
+
+2。 ssh 的修改，服务器端的修改
+nano etc/ssh/sshd_config
+#禁用密码登录
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+#ssh长链接30分钟
+ClientAliveInterval 60 ＃server每隔60秒发送一次请求给client，然后client响应，从而保持连接
+ClientAliveCountMax 30 ＃server发出请求后，客户端没有响应得次数达到3，就自动断开连接，正常情况下，client不会不响应
+
+
+
 
 -------------------------------------------------------
 SSH 的配置文件
