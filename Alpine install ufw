@@ -1,0 +1,41 @@
+https://wiki.alpinelinux.org/wiki/Uncomplicated_Firewall
+
+-----------------------------------------------
+Uncomplicated Firewall
+(Redirected from UFW)
+
+UFW stands for Uncomplicated Firewall, and is a program for managing a netfilter firewall. It provides a command line interface and aims to be uncomplicated and easy to use.
+Installation
+
+UFW can be found in the testing repository. Read Alpine_Linux_package_management#Repository_pinning to enable the testing repository.
+
+Once the testing repository has been enabled, UFW can be installed by issuing the following command:
+
+ apk add ip6tables ufw@testing
+Basic configuration
+
+The following is a simple configuration that will deny all incoming and outgoing data communication by default and allow incoming SSH, outgoing DNS and NTP traffic:
+
+ufw default deny incoming
+ufw default deny outgoing
+ufw limit SSH         # open SSH port and protect against brute-force login attacks
+ufw allow out 123/udp # allow outgoing NTP (Network Time Protocol)
+
+# The following instructions will allow apk to work:
+ufw allow out DNS     # allow outgoing DNS
+ufw allow out 80/tcp  # allow outgoing HTTP traffic
+
+The following lines are only needed the first time you install the package:
+
+ufw enable     # enable the firewall
+rc-update add ufw    # add UFW init scripts
+
+Check the status of UFW:
+
+ufw status
+Diskless mode
+
+If you have installed Alpine Linux as diskless then you need to use Alpine Local Backup (lbu) to save your UFW configuration. UFW data is stored in /usr/lib/ufw, therefore use the following commands to save the UFW configuration:
+
+lbu add /usr/lib/ufw
+lbu commit
