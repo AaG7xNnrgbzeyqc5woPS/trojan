@@ -11,4 +11,99 @@ vps install
 4,下一步，
   最好更改  ssh服务器端口，不要使用缺省22号端口，这样大大提高安全性，一般的网络端口扫描都会扫描22端口，其他的扫描少多了。可以减少99%的攻击
 
-  
+-------------------------------------------------------
+SSH 的配置文件
+------------------------------------------------------
+
+ssh 配置参考：
+https://liam.page/2017/09/12/rescue-your-life-with-SSH-config-file/
+https://www.hi-linux.com/posts/14346.html
+https://deepzz.com/post/how-to-setup-ssh-config.html
+
+
+我们在文章开头处提出了利用 SSH 登录管理大量机器的两个不便：
+
+    需要记忆大量机器的主机名；
+    需要记忆、输入大量机器上的用户口令。
+
+在上一节中，我们通过在本地主机生成公钥并交付远程主机，利用「你独有的」这条渠道完成了身份认证；从而避免了在登录时输入远程主机用户的口令。虽然，在示例中，我们不得不使用 -i 参数来指定希望使用的私钥文件路径。但这一方面是为了避免与本地主机当前用户默认密钥冲突，另一方面是为了演示这一参数的作用，再者也表明了本地主机用户可以使用功能多个密钥分别用于连接不同主机。
+
+然而，尽管避免了输入口令，但是「需要记忆大量主机名」的问题没有解决；同时还引出了新的问题：需要使用 -i 参数指定私钥路径。怎样解决这些问题呢？
+
+SSH 的配置文件与用户实际执行 ssh 命令时传入的参数协同作用。按照优先级，低优先级的配置项可视作默认值；而高优先级的配置项则会覆盖默认值。按优先级，有如下排序：
+
+    用户实际执行 ssh 时传入的参数；
+    用户的 SSH 配置文件 ${HOME}/.ssh/config；
+    系统的 SSH 配置文件 /etc/ssh/ssh_config。
+
+这样一来，通过 SSH 配置文件，我们可以按访问的主机来配置 SSH 的默认行为。
+SSH 配置文件的说明
+
+SSH 的配置文件有很多配置项可供配置。限于篇幅，此处显然是不可能穷尽的。因此，有兴趣的读者可以通过 man ssh_config 查看可用的配置项。
+
+SSH 的配置文件采用空格分割的键值形式。例如 Host localhost 表示键 Host 对应的值为 localhost。此篇涉及到的键如下：
+
+    Host：值为通配符的模式（Pattern）；该键之后的键值对，将用于匹配于该模式的主机。
+    HostName：值为真实的目标远程主机名；在值中，%h 可用于命令行接收到的主机名字的转义。
+    User：值为希望登录的远程主机的用户名；
+    IdentityFile：值为希望登录时使用的密钥文件。
+
+一个简单的例子
+
+这样一来，我们可以在配置文件中写入如下内容。
+
+Host localliam
+    HostName localhost
+    User liamhuang
+    IdentityFile /home/test/.ssh/id_rsa.test
+
+这样一来，执行 ssh localliam 就相当于执行了 ssh -i /home/test/.ssh/id_rsa.test liamhuang@localhost 了。
+
+$ ssh localliam
+Last login: Tue Sep 12 19:03:16 2017 from 127.0.0.1
+
+禁用密码登录
+
+如果你对服务器安全要求很高，那么禁用密码登录是必须的。因为使用密码登录服务器容易受到暴力破解的攻击，有一定的安全隐患。那么你需要编辑服务器的系统配置文件 /etc/ssh/sshd_config：
+
+PasswordAuthentication no
+ChallengeResponseAuthentication no
+
+关键词登录
+
+为了更方便的登录服务器，我们也可以省略用户名和主机名，采用关键词登录。那么你需要添加如下配置到 ~/.ssh/config：
+
+Host deepzz                        # 别名
+    HostName deepzz.com            # 主机地址
+    User root                      # 用户名
+    # IdentityFile ~/.ssh/id_ecdsa # 认证文件
+    # Port 22                      # 指定端口
+
+那么使用 $ ssh deepzz 就可以直接登录服务器了。
+
+
+----------------------------------------------
+ ssh保持长连接的方式
+ -------------------------------------------
+
+方法有以下三种：
+
+1.修改server端的etc/ssh/sshd_config
+
+ClientAliveInterval 60 ＃server每隔60秒发送一次请求给client，然后client响应，从而保持连接
+ClientAliveCountMax 3 ＃server发出请求后，客户端没有响应得次数达到3，就自动断开连接，正常情况下，client不会不响应
+
+systemctl reload sshd
+
+
+
+2.修改client端的etc/ssh/ssh_config添加以下：（在没有权限改server配置的情形下）
+
+ServerAliveInterval 60 ＃client每隔60秒发送一次请求给server，然后server响应，从而保持连接
+ServerAliveCountMax 3  ＃client发出请求后，服务器端没有响应得次数达到3，就自动断开连接，正常情况下，server不会不响应
+
+
+
+3.在命令参数里ssh -o ServerAliveInterval=60 这样子只会在需要的连接中保持持久连接， 毕竟不是所有连接都要保持持久的
+
+
