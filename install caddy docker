@@ -1,0 +1,208 @@
+
+see:
+https://hub.docker.com/r/abiosoft/caddy/
+https://github.com/abiosoft/caddy-docker
+https://letsencrypt.org/docs/rate-limits/
+https://community.letsencrypt.org/t/rate-limits-for-lets-encrypt/6769
+
+
+-----------------------
+to do
+
+1,全局代理翻墙 OK
+2,申请免费域名 Ok kvasar.top
+3,开通caddy服务 
+
+4,支线任务：笔记本双显卡驱动的安装
+
+--------------------------
+Caddy 设计例子：
+
+docker run -d \
+    -v /path/to/sites/root:/srv \
+    -v path/to/Caddyfile:/etc/Caddyfile \
+    -p 2015:2015 \
+    abiosoft/caddy
+
+-----------------------------------
+
+设计例子2：
+Additionally, you can use an environment variable to define the exact location caddy should save generated certificates:
+
+$ docker run -d \
+    -e "CADDYPATH=/etc/caddycerts" \
+    -v $HOME/.caddy:/etc/caddycerts \
+    -p 80:80 -p 443:443 \
+    abiosoft/caddy
+
+Above, we utilize the CADDYPATH environment variable to define a different location inside the container for certificates to be stored. This is probably the safest option as it ensures any future docker image changes don't interfere with your ability to save certificates!
+
+--------------------------------------------------
+设计例子：
+Let's Encrypt Subscriber Agreement
+
+Caddy may prompt to agree to Let's Encrypt Subscriber Agreement. This is configurable with ACME_AGREE environment variable. Set it to true to agree. ACME_AGREE=true.
+
+ACME_AGREE=true
+
+-e "ACME_AGREE=true" 
+
+--------------------------------------------
+
+
+
+
+我的网站设计：
+     网站路径： /var/www/www.kvasar.top
+     配置文件路径:/etc/caddy
+     证书路径：/etc/ssl/caddy
+     日志：        /var/log/caddy
+-----------------------------------------------
+目录创建命令：
+    $ sudo mkdir /etc/caddy
+    //$ sudo mkdir /etc/caddy/conf
+    //$ echo 'import /etc/caddy/conf/*' >> /etc/caddy/Caddyfile
+
+    $ sudo mkdir /etc/ssl/caddy
+    #      mkdir /var/log/caddy
+    #      mkdir /var/www
+    #      mkdir /var/www/www.kvasar.top
+-----------------------------------
+   文件目录的权限设置：
+   chmod a+rwx /etc/caddy
+   ls /etc -l | grep caddy
+
+   chmod a+rwx /etc/ssl/caddy
+   ls /etc/ssl -l | grep caddy
+
+   chmod a+rwx  /var/log/caddy
+   ls /var/log/ -l | grep caddy
+
+
+   chmod a+rwx  /var/www
+   ls /var -l | grep www
+
+   chmod a+rwx  /var/www/www.kvasar.top
+   ls /var/www -l | grep www.kvasar.top
+
+
+------------------------
+----------------
+  
+     域名：kvasar.top
+     端口: 2015
+     端口： 443，80
+     邮箱：john_help@protonmail.com
+
+对应的命令：
+docker run -d \
+    -e "ACME_AGREE=true" \
+    -e "CADDYPATH=/etc/caddycerts" \
+    -v “/etc/ssl/caddy:/etc/caddycerts”
+
+    -v  /var/www:/srv \
+    -v /etc/caddy/Caddyfile:/etc/Caddyfile \
+    
+    -p 80:80 -p 443:443 \
+    abiosoft/caddy \
+    -ca "https://acme-staging-v02.api.letsencrypt.org/directory"
+
+配置文件：
+$cd /etc/caddy
+$nano Caddyfile
+www.kvasar.top
+tls john_help@protonmail.com
+gzip
+#log /var/log/caddy/access.log
+
+
+------------------------------------
+test 0
+看了大量的资料，精心构造了测试命令，应该没有什么问题：
+使用staging environment，避免平凡的申请证书被封，可能会封一个星期，可怕啊。所以用这个测试环境。
+
+docker run -d \
+    -e "ACME_AGREE=true" \
+    -e "CADDYPATH=/etc/caddycerts" \
+    -v /etc/ssl/caddy:/etc/caddycerts \
+    -v /etc/caddy/Caddyfile:/etc/Caddyfile \
+    -v  /var/www/www.kvasar.top:/srv \
+    -p 80:80 -p 443:443 \
+    abiosoft/caddy \
+    -ca "https://acme-staging-v02.api.letsencrypt.org/directory"
+
+test fail.
+检查了下，发现docker 容器可以启动成功，但是浏览器上看不到https://www.kvasar.top网页
+ls /ect/ssl/caddy 发现了点东西，只有 uuid一个文件，似乎没有成功。
+
+
+https://letsencrypt.org/docs/staging-environment/
+Please note the v2 staging environment requires a v2 compatible ACME client.
+
+We highly recommend testing against our staging environment before using our production environment. This will allow you to get things right before issuing trusted certificates and reduce the chance of your running up against rate limits.
+
+The ACME URL for our ACME v2 staging environment is:
+
+https://acme-staging-v02.api.letsencrypt.org/directory
+
+If you’re using Certbot, you can use our staging environment with the --dry-run flag. For other ACME clients, please read their instructions for information on testing with our staging environment. Please note the v2 staging environment requires a v2 compatible ACME client.
+
+
+https://letsencrypt.org/
+https://letsencrypt.org/getting-started/
+https://letsencrypt.org/docs/staging-environment/
+https://github.com/mholt/certmagic
+https://caddyserver.com/v1/docs/automatic-https#obtaining-certificates
+https://caddyserver.com/v1/docs/tls
+https://github.com/abiosoft/caddy-docker
+
+-----------------------
+从简单的开始
+test1 
+docker run -d -p 2015:2015 abiosoft/caddy
+ok
+
+docker rm -f docker_name
+
+-----------------------
+test2
+$ docker run -d \
+    -v $(pwd)/Caddyfile:/etc/Caddyfile \
+    -p 80:80 -p 443:443 \
+    abiosoft/caddy
+error
+
+----------------------
+test3
+docker run -d \
+    -e "ACME_AGREE=true" \
+    -e "CADDYPATH=/etc/caddycerts" \
+    -v /etc/ssl/caddy:/etc/caddycerts \
+    -v /etc/caddy/Caddyfile:/etc/Caddyfile \
+    -v  /var/www/www.kvasar.top:/srv \
+    -p 80:80 -p 443:443 \
+    abiosoft/caddy \
+
+OK!!!
+Great work!!
+直接用正式的CA地址申请。可能是测试用的不兼容，需要2.0的客户端，而且各种应用里面没有如何使用测试环境的例子，也不好调试。
+所以直接用正式的，大胆测试下，居然成功，访问 
+https://www.kvasar.top 
+ok 
+404 Not Found
+根目录下还没文件，这个是对的。 至少说明caddy 服务器运行成功。
+
+https://kvasar.top/ 浏览器显示安全链接失败。这个没有申请证书
+http://kvasar.top/  404 Site kvasar.top is not served on this interface
+http://www.kvasar.top/ 可以自动跳转到  https://www.kvasar.top/ 不错！
+下一步的问题，如何让 http://kvasar.top/  https://kvasar.top/ 都跳转到 https://www.kvasar.top/,就完美啦
+
+在浏览器的中查看www.kvasar.top证书资料，可以看到证书有效期3个月。一切OK
+
+
+
+
+
+ 
+
+------------------
