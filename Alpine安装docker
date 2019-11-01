@@ -1,6 +1,7 @@
 See:
 
 1,https://wiki.alpinelinux.org/wiki/Docker
+   这个是官方文件，看官方文件就足够啦：
 
 2,alpine linux 环境中安装 docker
 http://www.imooc.com/article/287437?block_id=tuijian_wz
@@ -18,4 +19,8 @@ https://my.oschina.net/u/2306127/blog/1585672
     要在引导时启动 Docker 守护程序，请运行：rc-update add docker boot
     然后手动启动 Docker 守护程序，运行：service docker start
     参考alpinelinux Docker
+    
+    看官方文件就足够啦：
+    https://wiki.alpinelinux.org/wiki/Docker
+    https://wiki.alpinelinux.org/wiki/Docker
 
