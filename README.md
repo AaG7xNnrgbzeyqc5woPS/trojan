@@ -1,2 +1,2 @@
 # trojan
-fuck GFW
+出国留学
