@@ -37,6 +37,8 @@ $ docker run -d \
 
 Above, we utilize the CADDYPATH environment variable to define a different location inside the container for certificates to be stored. This is probably the safest option as it ensures any future docker image changes don't interfere with your ability to save certificates!
 
+----------------------------------------
+
 --------------------------------------------------
 设计例子：
 Let's Encrypt Subscriber Agreement
@@ -200,9 +202,22 @@ http://www.kvasar.top/ 可以自动跳转到  https://www.kvasar.top/ 不错！
 在浏览器的中查看www.kvasar.top证书资料，可以看到证书有效期3个月。一切OK
 
 
-
-
-
- 
-
 ------------------
+新增开机自动启动docker容器选项，名且命名docker容器为caddy
+test 5
+docker run -d \
+    --restart unless-stopped\
+    --name caddy\
+    -e "ACME_AGREE=true" \
+    -e "CADDYPATH=/etc/caddycerts" \
+    -v /etc/ssl/caddy:/etc/caddycerts \
+    -v /etc/caddy/Caddyfile:/etc/Caddyfile \
+    -v  /var/www/www.kvasar.top:/srv \
+    -p 80:80 -p 443:443 \
+    abiosoft/caddy 
+    
+ 容器启动成功，可以在浏览器中访问
+ 服务器使用reboot命令，重启，
+ 在看浏览器可以查看网站，
+ 登录服务器，docker ps -a 
+ 一切Ok！
