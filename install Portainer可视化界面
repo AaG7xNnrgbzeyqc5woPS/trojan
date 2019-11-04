@@ -38,7 +38,25 @@ docker run -d -p 9000:9000 \
  管理解密啊出现了，第一次需要设置管理密码
  安装到此完成！
  ----------------------------------------------
+ 配置
+ 设置密码后，进入一个界面，需要
  
+Connect Portainer to the Docker environment you want to manage.
+我们选择 local
+
+发现提示：
+
+
+Manage the Docker environment where Portainer is running.
+Ensure that you have started the Portainer container with the following Docker flag:
+-v "/var/run/docker.sock:/var/run/docker.sock" (Linux).
+or
+-v \\.\pipe\docker_engine:\\.\pipe\docker_engine (Windows).
+这个我们在命令里面已经做过了，放心吧
+
+点击 connect  
+出现问题，弹出提示，说 /var/run/docker.sock 没有访问权限。
+-----------------------------------
  
  
 
