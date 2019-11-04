@@ -19,4 +19,13 @@ tcp_bbr                20480  75
 #echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
 #reboot
 
+---------------------
+再次检查 
+# sysctl net.ipv4.tcp_available_congestion_control
+net.ipv4.tcp_available_congestion_control = reno cubic bbr
+# lsmod | grep bbr
+tcp_bbr                20480  75 
+服务器 bbr OK
+但是 manjaro不行
+
 
