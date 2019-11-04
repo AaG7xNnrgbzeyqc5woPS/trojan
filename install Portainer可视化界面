@@ -57,6 +57,37 @@ or
 点击 connect  
 出现问题，弹出提示，说 /var/run/docker.sock 没有访问权限。
 -----------------------------------
+ 权限问题 参看：
+ https://www.cnblogs.com/kirito-c/p/11357522.html
+ 
+ 容器内执行docker命令
+ https://www.awaimai.com/2703.html
+ ---这篇文章更适合我们
+ 摘要：
+ 大部分情况下，Docker通过主机（host）来查看和控制容器，
+其实还有其他的方式，API和容器内部，这里我们主要讲在容器内部执行docker命令。
+要实现这样的操作，有几个条件：
+    主机的/var/run/docker.sock文件挂载到容器中
+    主机的/usr/bin/docker文件挂载到容器中
+    容器中的用户有docker执行权限（默认情况下只有root用户和docker用户组有这个权限）
+    
+ ------------------------------------------
+ docker run --rm -it \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /usr/bin/docker:/usr/bin/docker \
+  ubuntu \
+  /bin/bash
+  ------------------------------------
+  
+  为了简化问题，我们使用 root启动容器
+    docker run -d -p 9000:9000 \
+    --restart=always \
+    --user root\
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    --name prtainer-test \
+    portainer/portainer
+    问题：启动失败，找不到root用户，应该是容器内没有root用户
+    ---暂停该该项目，Alpine的系统不熟悉， docker也不熟悉，难以解决 难度比较大的权限问题。
  
  
 
