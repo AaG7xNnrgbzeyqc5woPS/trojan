@@ -1,0 +1,44 @@
+Portainer可视化界面
+
+---------------------------------------
+参考以下博文：
+https://blog.csdn.net/A632189007/article/details/78779920
+https://blog.csdn.net/u011781521/article/details/80469804
+
+Docker可视化管理工具对比(DockerUI、Shipyard、Rancher、Portainer)
+https://www.cnblogs.com/jpfss/p/10810243.html
+结论：用 Portainer
+---------------------------------
+
+
+key:
+docker 可视化界面工具 Portainer
+
+# 查询当前有哪些Portainer镜像
+docker search portainer
+下载第一个，下载量最多的，最新的镜像。过时的不要用
+docker pull portainer/portainer 
+
+我们只搞单机版运行，集群以后再研究
+很简单，只要一条命令：
+docker run -d -p 9000:9000 \
+    --restart=always \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    --name prtainer-test \
+    portainer/portainer
+该语句用宿主机9000端口关联容器中的9000端口，并给容器起名为portainer-test。执行完该命令之后，使用该机器IP:PORT即可访问Portainer。
+
+ 查看下 
+ docker ps
+ 容器启动成功
+ 
+ 使用这个链接访问portainer,或者ip地址。
+ http://www.kvasar.top:9000/
+ OK
+ 管理解密啊出现了，第一次需要设置管理密码
+ 安装到此完成！
+ ----------------------------------------------
+ 
+ 
+ 
+
