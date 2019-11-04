@@ -25,7 +25,10 @@ tcp_bbr                20480  75
 net.ipv4.tcp_available_congestion_control = reno cubic bbr
 # lsmod | grep bbr
 tcp_bbr                20480  75 
-服务器 bbr OK
-但是 manjaro不行
+服务器 bbr O
+
+注释:
+但是 manjaro不行,反复实验,还是不行,也许manjaro定位于客户端,所以内核中关闭了这个bbr.
+完毕!
 
 
