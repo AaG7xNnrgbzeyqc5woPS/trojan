@@ -1,0 +1,22 @@
+
+https://apad.pro/centos-bbr/
+https://blog.csdn.net/bb23417274/article/details/83038073
+https://blog.csdn.net/qq_37940556/article/details/95337993
+
+1. 查看系统内核
+uname -r
+4.19.80-1-MANJARO
+
+2. 以下两个命令用来查看是否开启了BBR加速,输出字串中有bbr就OK
+#sysctl net.ipv4.tcp_available_congestion_control
+net.ipv4.tcp_available_congestion_control = reno cubic bbr
+# lsmod | grep bbr
+tcp_bbr                20480  75 
+
+------------------------------------------------
+/etc/sysctl.conf 文件末尾增加两行配置,然后重新启动系统
+#echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+#echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+#reboot
+
+
