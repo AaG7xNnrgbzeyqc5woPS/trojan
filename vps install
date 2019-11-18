@@ -32,8 +32,8 @@ HostKey /etc/ssh/ssh_host_ed25519_key
    2）客户端使用ed25159私钥链接，对应的公钥已经装载到主机了，链接前面也测试成功了。
    3） 确认 接受主机的hostkey,保存到 ~/.ssh/known_hosts文件
    4) 打开 ~/.ssh/known_hosts 可以看到 我们的主机公钥，已经是ed25519类型。
-
-
+参考：
+https://wiki.archlinux.org/index.php/OpenSSH
 
 
 
@@ -42,6 +42,7 @@ SSH 的配置文件
 ------------------------------------------------------
 
 ssh 配置参考：
+https://wiki.archlinux.org/index.php/OpenSSH
 https://wiki.archlinux.org/index.php/SSH_keys
 https://www.vandyke.com/solutions/host_keys/host_keys.pdf
 
