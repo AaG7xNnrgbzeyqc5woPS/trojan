@@ -1,18 +1,19 @@
-vps install 
-1, 1, 服务器安装 arch
+
+1  vps install 
+1>, 1, 服务器安装 arch
    2，服务器安装Alpine. Alpine 体积更小，只有5MByte
-2, ssh 配置
+2>, ssh 配置
    使用公私钥机制 免密码登录
    设置客户端配置文件，使用别名简化登录命令
    更改服务器空闲断线时间设定为 30分钟
-3,设置防火墙 ufw
+3>,设置防火墙 ufw
   ufw limit 22
   ufw allow 80,443
   ufw default deny
-4,下一步，
+4>,下一步，
   最好更改  ssh服务器端口，不要使用缺省22号端口，这样大大提高安全性，一般的网络端口扫描都会扫描22端口，其他的扫描少多了。可以减少99%的攻击
 
-2。 ssh 的修改，服务器端的修改
+2 ssh 的修改，服务器端的修改
 nano etc/ssh/sshd_config
 #禁用密码登录
 PasswordAuthentication no
@@ -20,6 +21,18 @@ ChallengeResponseAuthentication no
 #ssh长链接30分钟
 ClientAliveInterval 60 ＃server每隔60秒发送一次请求给client，然后client响应，从而保持连接
 ClientAliveCountMax 30 ＃server发出请求后，客户端没有响应得次数达到3，就自动断开连接，正常情况下，client不会不响应
+
+3, sshd的增强，启用ed25519做为hostkey
+#HostKey /etc/ssh/ssh_host_rsa_key
+#HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key
+为了更彻底，到/etc/ssh/目录下，删除除了ed25519以外的其它的hostkey
+ 测试：
+   1) 客户端 删除 ~/.ssh/known_hosts文件
+   2）客户端使用ed25159私钥链接，对应的公钥已经装载到主机了，链接前面也测试成功了。
+   3） 确认 接受主机的hostkey,保存到 ~/.ssh/known_hosts文件
+   4) 打开 ~/.ssh/known_hosts 可以看到 我们的主机公钥，已经是ed25519类型。
+
 
 
 
@@ -29,6 +42,9 @@ SSH 的配置文件
 ------------------------------------------------------
 
 ssh 配置参考：
+https://wiki.archlinux.org/index.php/SSH_keys
+https://www.vandyke.com/solutions/host_keys/host_keys.pdf
+
 https://liam.page/2017/09/12/rescue-your-life-with-SSH-config-file/
 https://www.hi-linux.com/posts/14346.html
 https://deepzz.com/post/how-to-setup-ssh-config.html
@@ -118,5 +134,8 @@ ServerAliveCountMax 3  ＃client发出请求后，服务器端没有响应得次
 
 
 3.在命令参数里ssh -o ServerAliveInterval=60 这样子只会在需要的连接中保持持久连接， 毕竟不是所有连接都要保持持久的
+
+-----------------------------------------------
+
 
 
